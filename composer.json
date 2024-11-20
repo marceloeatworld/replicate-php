@@ -1,38 +1,24 @@
 {
     "name": "marceloeatworld/replicate-php",
-    "description": "A PHP client for the Replicate API with enhanced deployment support",
-    "keywords": [
-        "replicate",
-        "php",
-        "package",
-        "api",
-        "deployment",
-        "ai",
-        "machine learning"
-    ],
-    "type": "library",
+    "description": "A PHP client for the Replicate API",
+    "keywords": ["replicate", "php", "package"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Marcelo",
-            "email": "votre@email.com",
-            "role": "Developer"
+            "name": "Marcelo Pereira",
+            "email": "diagngo@gmail.com"
         }
     ],
     "require": {
-        "php": "^8.1",
-        "saloonphp/saloon": "^3.0",
-        "illuminate/support": "^9.0|^10.0",
-        "guzzlehttp/guzzle": "^7.0"
+        "php": "^8.1.0",
+        "saloonphp/saloon": "^3.0"
     },
     "require-dev": {
         "laravel/pint": "^1.4",
-        "pestphp/pest": "^2.0",
+        "pestphp/pest": "^2.0.0",
         "pestphp/pest-plugin-arch": "2.5.0",
         "phpstan/phpstan": "^1.9.11",
-        "symfony/var-dumper": "^6.2.3",
-        "orchestra/testbench": "^7.0|^8.0",
-        "mockery/mockery": "^1.5"
+        "symfony/var-dumper": "^6.2.3"
     },
     "autoload": {
         "psr-4": {
@@ -41,17 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "MarceloEatWorld\\Replicate\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "MarceloEatWorld\\Replicate\\ReplicateServiceProvider"
-            ],
-            "aliases": {
-                "Replicate": "MarceloEatWorld\\Replicate\\Facades\\Replicate"
-            }
+            "Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",
@@ -73,9 +49,5 @@
             "@test:types",
             "@test:unit"
         ]
-    },
-    "support": {
-        "issues": "https://github.com/Marceloeatworld/replicate-php/issues",
-        "source": "https://github.com/Marceloeatworld/replicate-php"
     }
 }
