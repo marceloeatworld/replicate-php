@@ -25,7 +25,7 @@ composer require benbjurstrom/replicate-php
 
 Create a new api instance.
 ```php
-use BenBjurstrom\Replicate\Replicate;
+use MarceloEatWorld\Replicate\Replicate;
 ...
 
 $api = new Replicate(
@@ -146,7 +146,7 @@ $data->id; // la5xlbbrfzg57ip5jlx6obmm5y
 ### get()
 Use to get details about an existing prediction. If the prediction has completed the results will be under the output property.
 ```php
-use BenBjurstrom\Replicate\Data\PredictionData;
+use MarceloEatWorld\Replicate\Data\PredictionData;
 ...
 $id = 'la5xlbbrfzg57ip5jlx6obmm5y'
 /* @var PredictionData $data */
@@ -157,7 +157,7 @@ $data->output[0]; // https://replicate.delivery/pbxt/6UFOVtl1xCJPAFFiTB2tfveYBNR
 ### list()
 Use to get a cursor paginated list of predictions. Returns an PredictionsData object.
 ```php
-use BenBjurstrom\Replicate\Data\PredictionsData
+use MarceloEatWorld\Replicate\Data\PredictionsData
 ...
 
 /* @var PredictionsData $data */
@@ -171,7 +171,7 @@ $data->results[0]->id; // la5xlbbrfzg57ip5jlx6obmm5y
 ### create()
 Use to create a new prediction (invoke a model). Returns an PredictionData object.
 ```php
-use BenBjurstrom\Replicate\Data\PredictionData;
+use MarceloEatWorld\Replicate\Data\PredictionData;
 ...
 $version = '5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa';
 $input = [

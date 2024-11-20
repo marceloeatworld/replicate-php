@@ -1,8 +1,8 @@
 <?php
 
-namespace BenBjurstrom\Replicate\Requests;
+namespace MarceloEatWorld\Replicate\Requests;
 
-use BenBjurstrom\Replicate\Data\PredictionsData;
+use MarceloEatWorld\Replicate\Data\PredictionsData;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;

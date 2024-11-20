@@ -1,13 +1,13 @@
 <?php
 
-namespace BenBjurstrom\Replicate;
+namespace MarceloEatWorld\Replicate;
 
-use BenBjurstrom\Replicate\Data\PredictionData;
-use BenBjurstrom\Replicate\Data\PredictionsData;
-use BenBjurstrom\Replicate\Requests\GetPrediction;
-use BenBjurstrom\Replicate\Requests\GetPredictions;
-use BenBjurstrom\Replicate\Requests\PostPrediction;
-use BenBjurstrom\Replicate\Requests\PostDeploymentPrediction;
+use MarceloEatWorld\Replicate\Data\PredictionData;
+use MarceloEatWorld\Replicate\Data\PredictionsData;
+use MarceloEatWorld\Replicate\Requests\GetPrediction;
+use MarceloEatWorld\Replicate\Requests\GetPredictions;
+use MarceloEatWorld\Replicate\Requests\PostPrediction;
+use MarceloEatWorld\Replicate\Requests\PostDeploymentPrediction;
 use Exception;
 
 class PredictionsResource extends Resource

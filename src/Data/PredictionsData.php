@@ -1,6 +1,6 @@
 <?php
 
-namespace BenBjurstrom\Replicate\Data;
+namespace MarceloEatWorld\Replicate\Data;
 
 use Exception;
 use Saloon\Http\Response;
