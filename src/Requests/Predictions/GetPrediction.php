@@ -1,29 +1,25 @@
 <?php
 
-namespace MarceloEatWorld\Replicate\Requests;
+declare(strict_types=1);
+
+namespace MarceloEatWorld\Replicate\Requests\Predictions;
 
 use MarceloEatWorld\Replicate\Data\PredictionData;
-use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
-use Saloon\Traits\Body\HasJsonBody;
 
-class PostPredictionCancel extends Request implements HasBody
+class GetPrediction extends Request
 {
-    use HasJsonBody;
-
-    protected Method $method = Method::POST;
+    protected Method $method = Method::GET;
 
     public function __construct(
-        protected string $id,
-    ) {
-    }
+        protected readonly string $id,
+    ) {}
 
     public function resolveEndpoint(): string
     {
-        return sprintf('/predictions/%s/cancel
-', $this->id);
+        return sprintf('/predictions/%s', $this->id);
     }
 
     public function createDtoFromResponse(Response $response): PredictionData

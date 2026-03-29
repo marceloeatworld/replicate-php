@@ -4,41 +4,26 @@ on: ['push', 'pull_request']
 
 jobs:
   ci:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest]
-        php: [8.2]
-        dependency-version: [prefer-stable]
-
-    name: Formats P${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
+    name: Lint & Static Analysis
 
     steps:
-
     - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Cache dependencies
-      uses: actions/cache@v1
-      with:
-        path: ~/.composer/cache/files
-        key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php }}
+        php-version: '8.2'
         extensions: dom, mbstring, zip
-        tools: prestissimo
-        coverage: pcov
+        coverage: none
 
-    - name: Install Composer dependencies
-      run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
+    - name: Install dependencies
+      run: composer install --no-interaction --prefer-dist
 
-    - name: Coding Style Checks
+    - name: Coding Style
       run: composer test:lint
 
-    - name: Type Checks
+    - name: Static Analysis
       run: composer test:types

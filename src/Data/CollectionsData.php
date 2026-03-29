@@ -6,10 +6,10 @@ namespace MarceloEatWorld\Replicate\Data;
 
 use Saloon\Http\Response;
 
-final class PredictionsData
+final class CollectionsData
 {
     /**
-     * @param  array<int, PredictionData>  $results
+     * @param  array<int, CollectionData>  $results
      */
     public function __construct(
         public readonly ?string $previous,
@@ -29,7 +29,7 @@ final class PredictionsData
         if (is_array($rawResults)) {
             foreach ($rawResults as $item) {
                 if (is_array($item)) {
-                    $results[] = PredictionData::fromArray($item);
+                    $results[] = CollectionData::fromArray($item);
                 }
             }
         }

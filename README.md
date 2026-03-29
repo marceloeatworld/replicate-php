@@ -1,195 +1,347 @@
-# Replicate PHP client
-This is a framework-agnostic PHP client for [Replicate.com](https://replicate.com/) built on the amazing [Saloon v3](https://docs.saloon.dev/) 🤠 library. Use it to easily interact with machine learning models such as Stable Diffusion right from your PHP application.
+# Replicate PHP
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/benbjurstrom/replicate-php.svg?style=flat-square)](https://packagist.org/packages/benbjurstrom/replicate-php)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/benbjurstrom/replicate-php/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/benbjurstrom/replicate-php/actions?query=workflow%3tests+branch%3Amain)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/marceloeatworld/replicate-php.svg?style=flat-square)](https://packagist.org/packages/marceloeatworld/replicate-php)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/marceloeatworld/replicate-php/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/marceloeatworld/replicate-php/actions?query=workflow%3Atests+branch%3Amain)
+[![PHPStan](https://img.shields.io/github/actions/workflow/status/marceloeatworld/replicate-php/formats.yml?branch=main&label=phpstan&style=flat-square)](https://github.com/marceloeatworld/replicate-php/actions?query=workflow%3Aformats+branch%3Amain)
 
-## Table of contents
-- [Quick Start](https://github.com/benbjurstrom/replicate-php#-quick-start)
-- [Using with Laravel](https://github.com/benbjurstrom/replicate-php#using-with-laravel)
-- [Response Data](https://github.com/benbjurstrom/replicate-php#response-data)
-- [Webhooks](https://github.com/benbjurstrom/replicate-php#webhooks)
-- [Prediction Methods](https://github.com/benbjurstrom/replicate-php#available-prediction-methods)
-    - [get](https://github.com/benbjurstrom/replicate-php#get)
-    - [list](https://github.com/benbjurstrom/replicate-php#list)
-    - [create](https://github.com/benbjurstrom/replicate-php#create)
+A framework-agnostic PHP client for the [Replicate API](https://replicate.com/) built on [Saloon v4](https://docs.saloon.dev/).
 
-## 🚀 Quick start
+Full coverage of the Replicate HTTP API: predictions, models, deployments, trainings, files, collections, hardware, webhooks, and account.
 
-Install with composer.
+> This package is a fork of [benbjurstrom/replicate-php](https://github.com/benbjurstrom/replicate-php) which only covered predictions. This version has been entirely rewritten with full API coverage, Saloon v4, PHP 8.2+, and typed DTOs for every endpoint.
+
+## Requirements
+
+- PHP 8.2+
+
+## Installation
 
 ```bash
-composer require benbjurstrom/replicate-php
+composer require marceloeatworld/replicate-php
 ```
-### 
 
-Create a new api instance.
+## Quick Start
+
 ```php
 use MarceloEatWorld\Replicate\Replicate;
-...
 
-$api = new Replicate(
+$replicate = new Replicate(
     apiToken: $_ENV['REPLICATE_API_TOKEN'],
 );
 ```
-###
 
-Then use it to invoke your model (or in replicate terms "create a prediction").
+### Create a prediction
+
 ```php
-$version = 'db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf';
-$input = [
-    'model' => 'stable-diffusion-2-1',
-    'prompt' => 'a photo of an astronaut riding a horse on mars',
-    'negative_prompt' => 'moon, alien, spaceship',
-    'width' => 768,
-    'height' => 768,
-    'num_inference_steps' => 50,
-    'guidance_scale' => 7.5,
-    'scheduler' => 'DPMSolverMultistep',
-    'seed' => null,
-];
+$prediction = $replicate->predictions()->create(
+    version: 'stability-ai/sdxl:c221b2b8ef527988fb59bf24a8b97c4561f1c671f73bd389f866bfb27c061316',
+    input: ['prompt' => 'a photo of an astronaut riding a horse on mars'],
+);
 
-$data = $api->predictions()->create($version, $input);
-$data->id; // yfv4cakjzvh2lexxv7o5qzymqy
+$prediction->id;     // "xyz123"
+$prediction->status; // "starting"
 ```
-Note that the input parameters will vary depending on what version (model) you're using. In this example version [db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf](https://replicate.com/stability-ai/stable-diffusion/versions/db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf) is a Stable Diffusion 2.1 model optimized for speed.
-###
 
-## Create a prediction for a specific deployment
-ou can now create a prediction for a specific deployment using the createForDeployment method. This method takes the full name of the deployment and an array of data as input, sends the HTTP request, and returns the data of the created prediction.
+### Create a prediction using an official model
 
-Here's an example of how to use it:
 ```php
-$deploymentName = 'my-deployment';
-$input = [
-    'model' => 'stable-diffusion-2-1',
-    'prompt' => 'a photo of an astronaut riding a horse on mars',
-    'negative_prompt' => 'moon, alien, spaceship',
-    'width' => 768,
-    'height' => 768,
-    'num_inference_steps' => 50,
-    'guidance_scale' => 7.5,
-    'scheduler' => 'DPMSolverMultistep',
-    'seed' => null,
-];
-
-$data = $api->predictions()->createForDeployment($deploymentName, $input);
-$data->id; // yfv4cakjzvh2lexxv7o5qzymqy
+$prediction = $replicate->models()->createPrediction(
+    owner: 'meta',
+    name: 'meta-llama-3-70b-instruct',
+    input: ['prompt' => 'Write a haiku about PHP'],
+);
 ```
-###
+
+### Synchronous predictions (wait for result)
+
+```php
+$prediction = $replicate->predictions()->create(
+    version: 'stability-ai/sdxl:c221b2b8ef527988fb59bf24a8b97c4561f1c671f73bd389f866bfb27c061316',
+    input: ['prompt' => 'a painting of a cat'],
+    wait: 60, // wait up to 60 seconds for completion
+);
+
+if ($prediction->status === 'succeeded') {
+    $prediction->output; // result is ready
+}
+```
+
+### Get prediction status
+
+```php
+$prediction = $replicate->predictions()->get('xyz123');
+$prediction->status; // "succeeded"
+$prediction->output; // ["https://replicate.delivery/..."]
+```
+
+### List predictions
+
+```php
+$list = $replicate->predictions()->list();
+$list->results; // array of PredictionData
+$list->next;    // cursor for next page
+
+// Paginate
+$nextPage = $replicate->predictions()->list(cursor: $list->next);
+```
+
+### Cancel a prediction
+
+```php
+$replicate->predictions()->cancel('xyz123');
+```
+
+## Webhooks
+
+Pass webhook parameters directly to creation methods:
+
+```php
+$prediction = $replicate->predictions()->create(
+    version: 'owner/model:version',
+    input: ['prompt' => 'hello'],
+    webhook: 'https://example.com/webhook',
+    webhookEventsFilter: ['completed'],
+);
+```
+
+Get the webhook signing secret for verification:
+
+```php
+$secret = $replicate->webhooks()->getSecret();
+$secret->key; // "whsec_..."
+```
+
+## Streaming
+
+```php
+$prediction = $replicate->predictions()->create(
+    version: 'owner/model:version',
+    input: ['prompt' => 'hello'],
+    stream: true,
+);
+
+// If the model supports streaming, use the stream URL
+$prediction->urls['stream']; // SSE endpoint URL
+```
+
+## Models
+
+```php
+// List public models
+$models = $replicate->models()->list();
+
+// Get a model
+$model = $replicate->models()->get('stability-ai', 'sdxl');
+
+// Create a model
+$model = $replicate->models()->create(
+    owner: 'your-username',
+    name: 'my-model',
+    hardware: 'gpu-a40-large',
+    visibility: 'private',
+);
+
+// Update a model
+$model = $replicate->models()->update('your-username', 'my-model', [
+    'description' => 'Updated description',
+]);
+
+// Delete a model (must be private, no versions)
+$replicate->models()->delete('your-username', 'my-model');
+```
+
+### Model Versions
+
+```php
+$versions = $replicate->models()->listVersions('stability-ai', 'sdxl');
+$version = $replicate->models()->getVersion('stability-ai', 'sdxl', 'abc123');
+$replicate->models()->deleteVersion('your-username', 'my-model', 'abc123');
+```
+
+## Deployments
+
+```php
+// List deployments
+$deployments = $replicate->deployments()->list();
+
+// Get a deployment
+$deployment = $replicate->deployments()->get('your-username', 'my-deployment');
+
+// Create a deployment
+$deployment = $replicate->deployments()->create(
+    name: 'my-deployment',
+    model: 'your-username/my-model',
+    version: 'abc123...',
+    hardware: 'gpu-a40-large',
+    minInstances: 1,
+    maxInstances: 3,
+);
+
+// Update a deployment
+$deployment = $replicate->deployments()->update('your-username', 'my-deployment', [
+    'min_instances' => 2,
+    'max_instances' => 5,
+]);
+
+// Create prediction on a deployment
+$prediction = $replicate->deployments()->createPrediction(
+    owner: 'your-username',
+    name: 'my-deployment',
+    input: ['prompt' => 'hello world'],
+);
+
+// Delete a deployment
+$replicate->deployments()->delete('your-username', 'my-deployment');
+```
+
+## Trainings
+
+```php
+// Create a training
+$training = $replicate->trainings()->create(
+    owner: 'stability-ai',
+    name: 'sdxl',
+    versionId: 'abc123...',
+    destination: 'your-username/my-trained-model',
+    input: ['train_data' => 'https://example.com/data.zip'],
+    webhook: 'https://example.com/training-done',
+);
+
+// Get training status
+$training = $replicate->trainings()->get($training->id);
+
+// List trainings
+$trainings = $replicate->trainings()->list();
+
+// Cancel a training
+$replicate->trainings()->cancel($training->id);
+```
+
+## Files
+
+```php
+// Upload a file
+$file = $replicate->files()->upload(
+    content: file_get_contents('/path/to/image.jpg'),
+    filename: 'image.jpg',
+    contentType: 'image/jpeg',
+);
+
+// Get file metadata
+$file = $replicate->files()->get($file->id);
+
+// List files
+$files = $replicate->files()->list();
+
+// Delete a file
+$replicate->files()->delete($file->id);
+```
+
+## Collections
+
+```php
+// List collections
+$collections = $replicate->collections()->list();
+
+// Get a collection with its models
+$collection = $replicate->collections()->get('text-to-image');
+$collection->models; // array of ModelData
+```
+
+## Hardware
+
+```php
+// List available hardware
+$hardware = $replicate->hardware()->list();
+// Returns array of HardwareData with name and sku
+```
+
+## Account
+
+```php
+$account = $replicate->account()->get();
+$account->username;
+$account->type; // "user" or "organization"
+```
 
 ## Using with Laravel
-Begin by adding your credentials to your services config file.
+
+Add your credentials to your services config:
+
 ```php
 // config/services.php
 'replicate' => [
     'api_token' => env('REPLICATE_API_TOKEN'),
 ],
 ```
-###
 
-Bind the `Replicate` class in a service provider.
+Bind in a service provider:
+
 ```php
 // app/Providers/AppServiceProvider.php
-public function register()
+public function register(): void
 {
-    $this->app->bind(Replicate::class, function () {
-        return new Replicate(
-            apiToken: config('services.replicate.api_token'),
-        );
-    });
+    $this->app->bind(Replicate::class, fn () => new Replicate(
+        apiToken: config('services.replicate.api_token'),
+    ));
 }
-````
-###
-
-And use anywhere in your application.
-```php
-$data = app(Replicate::class)->predictions()->get($id);
 ```
-###
 
-Test your integration using Saloon's amazing [response recording](https://docs.saloon.dev/testing/recording-requests#fixture-path).
+Use anywhere:
+
 ```php
-use Saloon\Laravel\Saloon; // composer require sammyjo20/saloon-laravel "^2.0"
-...
-Saloon::fake([
-    MockResponse::fixture('getPrediction'),
+$prediction = app(Replicate::class)->predictions()->get($id);
+```
+
+## Testing
+
+Use Saloon's built-in mocking:
+
+```php
+use Saloon\Http\Faking\MockClient;
+use Saloon\Http\Faking\MockResponse;
+use MarceloEatWorld\Replicate\Requests\Predictions\GetPrediction;
+
+$mockClient = new MockClient([
+    GetPrediction::class => MockResponse::make(['id' => 'xyz', 'status' => 'succeeded']),
 ]);
 
-$id = 'yfv4cakjzvh2lexxv7o5qzymqy';
+$replicate = new Replicate('test-token');
+$replicate->withMockClient($mockClient);
 
-// The initial request will check if a fixture called "getPrediction" 
-// exists. Because it doesn't exist yet, the real request will be
-// sent and the response will be recorded to tests/Fixtures/Saloon/getPrediction.json.
-$data = app(Replicate::class)->predictions()->get($id);
-
-// However, the next time the request is made, the fixture will 
-// exist, and Saloon will not make the request again.
-$data = app(Replicate::class)->predictions()->get($id);
+$prediction = $replicate->predictions()->get('xyz');
+$prediction->status; // "succeeded"
 ```
 
 ## Response Data
-All responses are returned as data objects. Detailed information can be found by inspecting the following class properties:
 
-* [PredictionData](https://github.com/benbjurstrom/replicate-php/blob/main/src/Data/PredictionData.php)
-* [PredictionsData](https://github.com/benbjurstrom/replicate-php/blob/main/src/Data/PredictionsData.php)
+All responses are returned as typed data objects:
 
-## Webhooks
-Replicate allows you to configure a webhook to be called when your prediction is complete. To do so chain `withWebhook($url)` onto your api instance before calling the `create` method. For example:
-
-```php
-$api->predictions()->withWebhook('https://www.example.com/webhook')->create($version, $input);
-$data->id; // la5xlbbrfzg57ip5jlx6obmm5y
-```
-
-## Available Prediction Methods
-### get()
-Use to get details about an existing prediction. If the prediction has completed the results will be under the output property.
-```php
-use MarceloEatWorld\Replicate\Data\PredictionData;
-...
-$id = 'la5xlbbrfzg57ip5jlx6obmm5y'
-/* @var PredictionData $data */
-$data = $api->predictions()->get($id);
-$data->output[0]; // https://replicate.delivery/pbxt/6UFOVtl1xCJPAFFiTB2tfveYBNRLhLmJz8yMQAYCOeZSFhOhA/out-0.png
-```
-
-### list()
-Use to get a cursor paginated list of predictions. Returns an PredictionsData object.
-```php
-use MarceloEatWorld\Replicate\Data\PredictionsData
-...
-
-/* @var PredictionsData $data */
-$data = $api->predictions()->list(
-    cursor: '123', // optional
-);
-
-$data->results[0]->id; // la5xlbbrfzg57ip5jlx6obmm5y
-
-```
-### create()
-Use to create a new prediction (invoke a model). Returns an PredictionData object.
-```php
-use MarceloEatWorld\Replicate\Data\PredictionData;
-...
-$version = '5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa';
-$input = [
-    'text' => 'Alice'
-];
-
-/* @var PredictionData $data */
-$data = $api->predictions()
-    ->withWebhook('https://www.example.com/webhook') // optional
-    ->create($version, $input);
-$data->id; // la5xlbbrfzg57ip5jlx6obmm5y
-```
+| DTO | Description |
+|-----|-------------|
+| `AccountData` | Account info |
+| `PredictionData` | Single prediction |
+| `PredictionsData` | Paginated prediction list |
+| `ModelData` | Single model |
+| `ModelsData` | Paginated model list |
+| `ModelVersionData` | Single model version |
+| `ModelVersionsData` | Paginated version list |
+| `CollectionData` | Single collection with models |
+| `CollectionsData` | Paginated collection list |
+| `DeploymentData` | Single deployment |
+| `DeploymentsData` | Paginated deployment list |
+| `TrainingData` | Single training |
+| `TrainingsData` | Paginated training list |
+| `FileData` | Single file metadata |
+| `FilesData` | Paginated file list |
+| `HardwareData` | Hardware option (name + SKU) |
+| `WebhookSecretData` | Webhook signing secret |
 
 ## Credits
 
-- [Ben Bjurstrom](https://github.com/benbjurstrom)
-- [All Contributors](../../contributors)
+- [Marcelo Pereira](https://github.com/marceloeatworld)
+- Originally forked from [benbjurstrom/replicate-php](https://github.com/benbjurstrom/replicate-php)
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). See [License File](LICENSE.md) for more information.

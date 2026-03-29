@@ -1,6 +1,8 @@
 <?php
 
-namespace MarceloEatWorld\Replicate\Requests;
+declare(strict_types=1);
+
+namespace MarceloEatWorld\Replicate\Requests\Predictions;
 
 use MarceloEatWorld\Replicate\Data\PredictionsData;
 use Saloon\Enums\Method;

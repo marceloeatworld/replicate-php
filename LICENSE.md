@@ -1,5 +1,6 @@
 The MIT License (MIT)
 
+Copyright (c) Marcelo Pereira <diagngo@gmail.com>
 Copyright (c) Ben Bjurstrom <bbjurstrom@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

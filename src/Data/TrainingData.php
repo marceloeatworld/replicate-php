@@ -6,10 +6,11 @@ namespace MarceloEatWorld\Replicate\Data;
 
 use Saloon\Http\Response;
 
-final class PredictionData
+final class TrainingData
 {
     /**
      * @param  array<string, mixed>  $input
+     * @param  array<string, mixed>|null  $output
      * @param  array<string, mixed>|null  $metrics
      * @param  array<string, string>  $urls
      */
@@ -17,17 +18,16 @@ final class PredictionData
         public readonly string $id,
         public readonly ?string $model,
         public readonly ?string $version,
-        public readonly string $createdAt,
-        public readonly ?string $completedAt,
-        public readonly ?string $startedAt,
         public readonly string $status,
-        public readonly ?bool $webhookCompleted,
         public readonly array $input,
+        public readonly ?array $output,
         public readonly ?string $logs,
-        public readonly ?array $metrics,
-        public readonly array $urls,
         public readonly mixed $error,
-        public readonly mixed $output,
+        public readonly ?array $metrics,
+        public readonly string $createdAt,
+        public readonly ?string $startedAt,
+        public readonly ?string $completedAt,
+        public readonly array $urls,
     ) {}
 
     public static function fromResponse(Response $response): self
@@ -44,28 +44,27 @@ final class PredictionData
     {
         $model = $data['model'] ?? null;
         $version = $data['version'] ?? null;
-        $completedAt = $data['completed_at'] ?? null;
-        $startedAt = $data['started_at'] ?? null;
-        $webhookCompleted = $data['webhook_completed'] ?? null;
+        $output = $data['output'] ?? null;
         $logs = $data['logs'] ?? null;
         $metrics = $data['metrics'] ?? null;
+        $startedAt = $data['started_at'] ?? null;
+        $completedAt = $data['completed_at'] ?? null;
         $urls = $data['urls'] ?? [];
 
         return new self(
             id: (string) ($data['id'] ?? ''),
             model: is_string($model) ? $model : null,
             version: is_string($version) ? $version : null,
-            createdAt: (string) ($data['created_at'] ?? ''),
-            completedAt: is_string($completedAt) ? $completedAt : null,
-            startedAt: is_string($startedAt) ? $startedAt : null,
             status: (string) ($data['status'] ?? ''),
-            webhookCompleted: is_bool($webhookCompleted) ? $webhookCompleted : null,
             input: is_array($data['input'] ?? null) ? $data['input'] : [],
+            output: is_array($output) ? $output : null,
             logs: is_string($logs) ? $logs : null,
-            metrics: is_array($metrics) ? $metrics : null,
-            urls: is_array($urls) ? $urls : [],
             error: $data['error'] ?? null,
-            output: $data['output'] ?? null,
+            metrics: is_array($metrics) ? $metrics : null,
+            createdAt: (string) ($data['created_at'] ?? ''),
+            startedAt: is_string($startedAt) ? $startedAt : null,
+            completedAt: is_string($completedAt) ? $completedAt : null,
+            urls: is_array($urls) ? $urls : [],
         );
     }
 }
