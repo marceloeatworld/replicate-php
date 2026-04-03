@@ -4,7 +4,7 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/marceloeatworld/replicate-php/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/marceloeatworld/replicate-php/actions?query=workflow%3Atests+branch%3Amain)
 [![PHPStan](https://img.shields.io/github/actions/workflow/status/marceloeatworld/replicate-php/formats.yml?branch=main&label=phpstan&style=flat-square)](https://github.com/marceloeatworld/replicate-php/actions?query=workflow%3Aformats+branch%3Amain)
 
-A framework-agnostic PHP client for the [Replicate API](https://replicate.com/) compatible with Laravel and native PHP, built on [Saloon v4](https://docs.saloon.dev/).
+#1 A framework-agnostic PHP client for the [Replicate API](https://replicate.com/) compatible with Laravel and native PHP, built on [Saloon v4](https://docs.saloon.dev/).
 
 Full coverage of the Replicate HTTP API: predictions, models, deployments, trainings, files, collections, hardware, webhooks, and account.
 
